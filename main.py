@@ -1,3 +1,178 @@
+from copy import copy
+import sys
+import random
+from typing import Any, Iterator, SupportsIndex
+from colorama import init, Fore, Back, Style
+import time
+import os
+
+
+class Debuger():
+    def __init__(self) -> None:
+        os.system('cls')
+        self._line_ = -1
+        self._file_ = None
+    
+    @property
+    def _time_(self):
+        _time = time.localtime(time.perf_counter())
+        return f'{Fore.CYAN}[ {_time[3]}:{_time[4]}:{_time[5]} ]{Fore.RESET}'
+        
+    @property
+    def _debug_(self):
+        return f'{Fore.BLACK}[ DEBUG ]{Fore.RESET}{self._stroke_line_}'
+    
+    @property
+    def _win_(self):
+        return f'{Fore.MAGENTA}[ WINDOW ]{Fore.RESET}'
+    
+    @property
+    def _list_(self):
+        return f'{Fore.LIGHTYELLOW_EX}[ LIST ]{Fore.RESET}'
+    
+    @property
+    def _list_converting_(self):
+        return f'{Fore.YELLOW}[ CONVERTING ]{Fore.RESET}'
+    
+    @property
+    def _list_mutation_(self):
+        return f'{Fore.YELLOW}[ MUTATION ]{Fore.RESET}'
+    
+    @property
+    def _list_mutation_copy_(self):
+        return f'{Fore.YELLOW}[ COPY ]{Fore.RESET}'
+    
+    @property
+    def _list_mutation_concat_(self):
+        return f'{Fore.YELLOW}[ CONCATINATION ]{Fore.RESET}'
+    
+    @property
+    def _list_mutation_dellete_(self):
+        return f'{Fore.YELLOW}[ DELLETE ]{Fore.RESET}'
+    
+    @property
+    def _list_mutation_sort_(self):
+        return f'{Fore.YELLOW}[ SORT ]{Fore.RESET}'
+    
+    @property
+    def _list_id_(self):
+        return f'{Fore.LIGHTMAGENTA_EX}[ ID ]{Fore.RESET}'
+    
+    @property
+    def _stroke_line_(self):
+        if self._file_!='GL':
+            stroke = self._line_
+        else:
+            stroke = str(self._line_) + self._not_exactly_
+        
+        return f'{Fore.WHITE}{Style.BRIGHT}[ stroke:{stroke} {Style.BRIGHT}{Fore.WHITE}file:{self._file_}.py ]{Fore.RESET}{Style.RESET_ALL}'
+    
+    @property
+    def _error_(self):
+        return f'{Fore.RED}[ ERROR ]{Fore.RESET}'
+    
+    @property
+    def _not_exactly_(self):
+        return f'{Fore.YELLOW}{Style.DIM}(NOT_EXACTLY){Style.RESET_ALL}{Fore.RESET}'
+    
+    @property
+    def _setter_(self):
+        return f'{Fore.LIGHTMAGENTA_EX}[ SETTER ]{Fore.RESET}'
+    
+    @property
+    def _getter_(self):
+        return f'{Fore.LIGHTMAGENTA_EX}[ GETTER ]{Fore.RESET}'
+    
+    @property
+    def _counter_(self):
+        return f'{Fore.LIGHTCYAN_EX}[ COUNTER ]{Fore.RESET}'
+
+    
+    
+    
+    
+    @property
+    def SUCCSES(self):
+        return f'{self._time_}{self._debug_}{Fore.GREEN} Succes!{Fore.RESET}'
+    
+    # todo WIN_INIT ------------
+    @property
+    def WIN_SYS_INIT_START(self):
+        return f'{self._time_}{self._debug_}{self._win_} Start init...'
+    
+    @property
+    def WIN_SYS_VIDEO_DRIVER_INIT(self):
+        return f'{self._time_}{self._debug_}{self._win_} Video driver init..'
+    
+    @property
+    def WIN_SYS_ATTRS_INIT(self):
+        return f'{self._time_}{self._debug_}{self._win_} Atributes setup..'
+    
+    def WIN_SYS_ERROR(self, log: str):
+        return f'{self._time_}{self._debug_}{self._win_}{self._error_}{log}'
+    # todo WIN_INIT -------------
+
+    # todo LIST_INIT -------------
+    def LIST_MODULES_INIT(self, id: Any):
+        return f'{self._time_}{self._debug_}{self._list_} List {Fore.BLACK}[id:{id}]{Fore.RESET} init...'
+    
+    def LIST_ERROR(self, log: str):
+        return f'{self._time_}{self._debug_}{self._list_}{self._error_}{log}'
+    
+    def LIST_CONVERTING(self,object: Any):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_converting_}{Fore.BLACK}[ Object: {object} Type: {type(object)} ]{Fore.RESET} Object start converting...'
+        
+    def LIST_ADD(self, id: Any, object: Any):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_mutation_} List {Fore.BLACK}[id:{id}]{Fore.RESET} add {Fore.BLACK}[ Object: {object} Type: {type(object)} ]{Fore.RESET}'
+        
+    def LIST_CLEAR(self, id: Any):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_mutation_} List {Fore.BLACK}[id:{id}]{Fore.RESET} cleared'
+    
+    def LIST_POP(self, id: Any, Index: int, list):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_mutation_} List {Fore.BLACK}[id:{id}]{Fore.RESET} delete {Fore.BLACK}[ index: {Index} object: {list[Index]} ]{Fore.RESET} element.'
+    
+    @property
+    def LIST_ID_GENERATE(self):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_id_} Generate id started...'
+    
+    def LIST_ID_GENERATE_FINISH(self, id: Any):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_id_} Id {Fore.BLACK}[{id}]{Fore.RESET} generated!'
+    
+    def LIST_SET_ID(self, list: 'List', id: Any):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_id_}{self._setter_} List {Fore.BLACK}[id:{list.id}]{Fore.RESET} set new {Fore.BLACK}[id:{id}]{Fore.RESET}'
+    
+    def LIST_SET_ID_ERROR(self, list: 'list', id: Any):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_id_}{self._setter_}{self._error_} List {Fore.BLACK}[id:{list.id}]{Fore.RESET} dont set new {Fore.BLACK}[id:{id} type:{type(id)}]{Fore.RESET} '
+    
+    def LIST_COPY(self, list: 'List' ,id: Any):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_mutation_}{self._list_mutation_copy_} List {Fore.BLACK}[id:{list.id} data:{list._list}]{Fore.RESET} copy new list {Fore.BLACK}[id:{id}]{Fore.RESET} '
+    
+    def LIST_COUNTER_INIT(self, list: 'List'):
+        return f'{self._time_}{self._debug_}{self._list_}{self._counter_} List {Fore.BLACK}[id:{list.id}]{Fore.RESET} counter start init...'
+    
+    def LIST_COUNTER(self, list: 'List', count: int, object: Any):
+        return f'{self._time_}{self._debug_}{self._list_}{self._counter_} List {Fore.BLACK}[id:{list.id}]{Fore.RESET} using counter {Fore.BLACK}[object:{object} count:{count}]{Fore.RESET}'
+    
+    def LIST_CONCAT(self, my_list: 'List', list: 'List'):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_mutation_}{self._list_mutation_concat_} List {Fore.BLACK}[id:{my_list.id}]{Fore.RESET} concat list {Fore.BLACK}[id:{list.id}]{Fore.RESET}'
+    
+    def LIST_CONCAT_NEW(self, my_list: 'List', list: 'List', new_list: 'List'):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_mutation_}{self._list_mutation_concat_} List {Fore.BLACK}[id:{my_list.id}]{Fore.RESET} concat list {Fore.BLACK}[id:{list.id}]{Fore.RESET} to new list {Fore.BLACK}[id:{new_list.id}]{Fore.RESET}'
+    
+    def LIST_INDEX(self, list: 'List', index: int, object: Any):
+        return f'{self._time_}{self._debug_}{self._list_}{self._getter_} List {Fore.BLACK}[id:{list.id}]{Fore.RESET} getter use {Fore.BLACK}[object:{object} index:{index}]{Fore.RESET}'
+    
+    def LIST_DELETE(self, list: 'List', index: int):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_mutation_}{self._list_mutation_dellete_} List {Fore.BLACK}[id:{list.id}]{Fore.RESET} dellete [object:{list[index]} index:{index}]'
+    
+    def LIST_DELETE_ERROR(self, list: 'List', index: int):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_mutation_}{self._list_mutation_dellete_}{self._error_} List {Fore.BLACK}[id:{list.id}]{Fore.RESET} dellete index:{index} not found!'
+    
+    def LIST_SORT(self, list: 'List', key: Any, reversed: bool):
+        return f'{self._time_}{self._debug_}{self._list_}{self._list_mutation_}{self._list_mutation_sort_} List {Fore.BLACK}[id:{list.id}]{Fore.RESET} sort by {Fore.BLACK}[key:{key} reversed:{reversed}]{Fore.RESET}'
+    
+    # todo LIST_INIT -------------
+_deb_ = Debuger()
 class List():
     ONE_ELEMENT = 'one'
     MANY_ELEMENT = 'many'
